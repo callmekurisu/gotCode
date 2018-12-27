@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Got Code?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+     <link rel="stylesheet" href="/resources/demos/style.css">
+</head>
+<!--load jQuery resources-->
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+</script>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+</script>
+<script>
+
+    'use strict'
+document.addEventListener("DOMContentLoaded", () => {
+    //get elements for dynamic pricing conversion
+    let btcprice = document.getElementById("btcprice");
+    let cs1price = document.getElementById("CS1price");
+    let cs2price = document.getElementById("CS2price");
+    let cs3price = document.getElementById("CS3price");
+    let cs1sats = document.getElementById("cs1sats").innerText;
+    let cs2sats = document.getElementById("cs2sats").innerText;
+    let cs3sats = document.getElementById("cs3sats").innerText;
+    let apiUrl = "https://api.coinmarketcap.com/v2/ticker/"
+    let clr = document.getElementById("main");
+    let paywall = document.getElementById("paydiv");
+    //no payment functionality for now...
+    let nopay = document.getElementById("nopay");
+    let nopay2 = document.getElementById("nopay2");
+    let nopay3 = document.getElementById("nopay3");
+//display invoice when pay button is clicked    
+$( document ).ready(() =>{
+    $("#payreq").hide();
+ $( "#nopay" ).click( () => {
+     $("#payreq").show();
+
+	 $( () => {
+        //re-direct to asset
+        //asset will determine if payment is ok
+        //grab invoice from popup
+        let payreq = document.getElementById("payreq").innerText;
+
+     
+     $( "#dialog-confirm" ).dialog({
+         
+        resizable: false,
+        height: "auto",
+        width: 400,
+        modal: true,
+        buttons: {
+    //arrow function wont work here
+"Access File": function() {
+     $( this ).dialog( "close" ); 
+     let open = () => {
+         setTimeout(()=>{
+           

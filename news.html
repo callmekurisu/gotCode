@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>News</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script>
+    
+    'use strict'
+
+//dynamic date optimization
+//after a while a hard coded date in the API call will error
+//use results within the past week
+
+//seconds since Unix epoch
+let seconds = Math.floor(Date.now() / 1000);
+//milliseconds in a week
+let week = 604800 * 1000;
+let useDate = (Date.now()-week);
+//get last week's date
+let date = new Date(useDate);
+let y = date.getFullYear();
+//month indexed from 0 to 11 
+let mth = date.getMonth()+1;
+let d = date.getDate();
+//API requires two digit month
+let month = () => mth < 10 ? `0${mth}`: `${mth}`;
+let m = month();
+let apiDate = `${y}-${m}-${d}`;
+console.log(`Query date set to: ${apiDate}`);
+
+//console.log(`Getting results since: ${apiDate}`);
+
+document.addEventListener("DOMContentLoaded", () => {
+    let form = document.getElementById("myform");
+    let desc = document.getElementById("description");
+    let newsurl = document.getElementById("newsurl");
+    let foot = document.getElementById("foot");
+    //API definition
+    let apiUrl = "https://newsapi.org/v2/everything?q=";
+    let apiUrl2 = `&language=en&from=${apiDate}&sortBy=publishedAt&`;
+    let apiKey = "apiKey=e5de842e9935484f8af9dd1e39123056";
+    form.addEventListener("submit", event => {
+        //handle form default so app don't crash
+        event.preventDefault();
+        let form = document.getElementById("myform");
+        let q = form.elements[0].value;
+        //check user entry
+        if(q === "bitcoin" || q === "blockchain"){
+            console.log(`Fetching ${q} news...`);
+            //latency display
+            news.innerHTML = '<img id ="loading" src="https://media1.tenor.com/images/db85ba00c6073b451a8f05156a66524e/tenor.gif?itemid=9856796">';
+            desc.innerHTML = "";
+            newsurl.innerHTML = "";
+            foot.innerHTML = "";
+
+            //go fetch
+            fetch(`${apiUrl}${q}${apiUrl2}${apiKey}`)
+            //.json() method returns a Promise
+            //of the response body parsed from JSON
+            .then(res => res.json())
+            .then(data => {
+            
+            //return random results of news articles
+            let numArticles = Object.keys(data.articles).length;
+            console.log(`Grabbed ${numArticles} articles.`)
+            console.log("Randomizing...")
+            let n = Math.floor(Math.random() * numArticles);
+            
+            //display response from API
+            window.setTimeout(()=> {
+                console.log("Here you go!")
+                news.innerHTML = data.articles[n].title;
+                desc.innerHTML = "<h4><strong>Abstract</strong>:</h4>"+data.articles[n].description;
+                newsurl.innerHTML = '<strong>Source</strong>: <a href="'+data.articles[n].url + '" target="_blank">' + data.articles[n].source.name  + '</a>';    
+                foot.innerHTML = 'News provided by <a href="https://newsapi.org/">News API</a>'
+                },3000);
+                
+            
+            
+        })
+        .catch(err => console.log(err))
+        } else {
+            console.log("Invalid entry.")
+            alert("Query currently limited to bitcoin or blockchain only! More results coming soon!");    
+        };
+    })
+    
+});
+
+    </script>
+<style>
+
+html {
+    background-color: white;
+    overflow-x: hidden;
+    padding-right: 10px;
+}
+
+#title{
+    
+    text-shadow: -1px -1px 3px #AAA,
+                         1px 1px 3px #FFF;
+    box-shadow: 10px 10px 5px #888888;
+    color: black;
+    padding-bottom: 10px;
+    font-size: 20px;
+    font-family: "Sans"; 
+  }
+
+#main {
+    background-color: white;
+    margin-top: 20px;
+    padding-bottom: 120px;
+    margin-left: 10px;
+    font-size: 16px;
+}
+  #btcprice{
+      text-align: left;
+      padding-left: 20px;
+  }
+
+  #git {
+    margin-left: 10px;
+    border-radius: 100%;
+    width: 100px;
+  }
+
+  #newsicon {
+    margin-left: 20px;
+    border-radius: 100%;
+    width: 100px;
+  }
+  
+  #video {
+    margin-left: 10px;
+    margin-top: 20px;
+  }
+  
+  table, th, td{
+    font-family: fantasy;
+    font-size: 20px;
+    text-align: center;
+    margin-left: 10px;
+      
+  } 
+
+  .header {
+    text-align: center !important;
+  }
+
+  #note1 {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 24px;
+  }
+
+  #note2 {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  
+ textarea {
+   resize: none;
+   
+ }
+
+footer {
+  margin-left: 10px;
+  font-family: monospace;
+}
+
+#news {
+  font-family: fantasy;
+  font-weight: bold;
+  text-decoration: darkblue;
+}
+
+#loading {
+  width: 300px;
+  margin-left: 50px;
+  margin-top: 40px;
+}
+
+</style>
+    
+</head>
+
+
+<body>
+    <body>
+        <div>
+            <h1 id="title"><a href="/">
+            <img id="git" src="https://cdn2.iconfinder.com/data/icons/web-application-icons-part-i/100/Artboard_43-512.png">
+            </a>
+            </h1>
+        </div>
+        <div id="main">
+            <form id="myform">
+                <label>Query: </label>
+                <input type="text" id="query"
+                placeholder="bitcoin or blockchain" 
+                 required autofocus>
+                 <button type="submit" class="btn btn-primary" id="newsBtn">Get News</button>
+            </form>
+            
+            <h2 id="news">Cryptocurrency News</h2>
+            <p id="description"></p>
+            <p id="newsurl"></p>
+        </div> 
+    
+</body>
+<footer id="foot"></footer>
+</html>

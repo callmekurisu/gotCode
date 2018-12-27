@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>K-means Clustering</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<style>
+
+html {
+    background-color: white;
+    overflow-x: hidden;
+    padding-right: 10px;
+}
+
+#title{
+    
+    text-shadow: -1px -1px 3px #AAA,
+                         1px 1px 3px #FFF;
+    box-shadow: 10px 10px 5px #888888;
+    color: black;
+    padding-bottom: 10px;
+    font-size: 20px;
+    font-family: "Sans"; 
+  }
+
+#main {
+    background-color: white;
+    margin-top: 20px;
+    padding-bottom: 120px;
+    margin-left: 10px;
+    font-size: 16px;
+}
+  #btcprice{
+      text-align: left;
+      padding-left: 20px;
+  }
+
+  #git {
+    margin-left: 10px;
+    border-radius: 100%;
+    width: 100px;
+  }
+
+  #newsicon {
+    margin-left: 20px;
+    border-radius: 100%;
+    width: 100px;
+  }
+  
+  #video {
+    margin-left: 10px;
+    margin-top: 20px;
+  }
+  
+  table, th, td{
+    font-family: fantasy;
+    font-size: 20px;
+    text-align: center;
+    margin-left: 10px;
+      
+  } 
+
+  .header {
+    text-align: center !important;
+  }
+
+  #note1 {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 24px;
+  }
+
+  #note2 {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  
+ textarea {
+   resize: none;
+   
+ }
+
+footer {
+  margin-left: 10px;
+  font-family: monospace;
+}
+
+#news {
+  font-family: fantasy;
+  font-weight: bold;
+  text-decoration: darkblue;
+}
+
+#loading {
+  width: 300px;
+  margin-left: 50px;
+  margin-top: 40px;
+}
+
+</style>
+
+<body>
+        <div>
+                <h1 id="title"><a href="/">
+                <img id="git" src="https://cdn2.iconfinder.com/data/icons/web-application-icons-part-i/100/Artboard_43-512.png">
+			</a> </h1>
+            </div>
+            <div id="main">
+                    <textarea rows="30" cols="90"> 
+#www.github.com/callmekurisu
+
+#intialize library for kmeans clustering and elbow method
+library(cluster)
+library(NbClust)
+library(factoextra)
+
+#set the working directory
+setwd("/home/kurisu/Documents/Data630/Assignment5/")
+
+#reproducible output
+set.seed(1234)
+
+#load CreditApproval file with headers in the first row 
+sensors&lt;-read.csv(file = "sensor_readings_24.csv", header = TRUE, sep = ",")
+
+#summary stats
+summary(sensors)
+
+#dataset structure
+str(sensors)
+
+#Class variable distribution
+plot(sensors$Class)
+
+#create correlation matrix with heatmap
+cormat &lt;- round(cor(sensors[1:24]),2)
+head(cormat)
+library(reshape2)
+melted_cormat &lt;- melt(cormat)
+head(melted_cormat)
+library(ggplot2)
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) +  
+  geom_tile()
+
+#copy the dataset
+sensors2&lt;-sensors
+#remove the class variable
+sensors2$Class&lt;-NULL
+
+#scale the dataset
+sensors2[1:24]&lt;-scale(sensors2[1:24])
+
+#store the model with 4 clusters
+kc&lt;-kmeans(sensors2, 4, iter.max = 40)
+
+
+#print the model output
+print(kc)
+
+#between sum of squares
+kc$betweenss
+
+#compare the model with the classes
+table(sensors$Class, kc$cluster)
+
+#model variations
+#K-means method with k=2
+kc&lt;-kmeans(sensors2, 2, iter.max = 20)
+kc
+kc$betweenss
+#K-means method with k=3
+kc&lt;-kmeans(sensors2, 3, iter.max = 30)
+kc
+kc$betweenss
+#K-means method with k=5
+kc&lt;-kmeans(sensors2, 5, iter.max = 50)
+kc
+kc$betweenss
+
+#minimum within cluster sum of squares with 3 clusters
+
+#model refinement
+#the object is only moving clockwise therefore slight turns should be removed
+#subset for no slight turns and re-factor
+modsensors &lt;- subset(sensors, sensors$Class!="Slight-Left-Turn")
+modsensors &lt;- subset(modsensors, modsensors$Class!="Slight-Right-Turn")
+modsensors$Class&lt;-factor(modsensors$Class)
+
+#verify dataset structure
+str(modsensors)
+
+#copy the modified dataset
+modsensors2&lt;-modsensors
+
+#remove class from copied dataset
+modsensors2$Class&lt;-NULL
+
+#scale the dataset
+modsensors2[1:24]&lt;-scale(modsensors2[1:24])
+
+#K-means method with k= 2
+kc&lt;-kmeans(modsensors2, 2, iter.max = 20)
+
+#cross-tabulation
+table(modsensors$Class, kc$cluster)
+
+#dataviz
+#verify cluster selection with the elbow method, within groups sum of squares
+fviz_nbclust(modsensors2, kmeans, method = "wss") +
+  geom_vline(xintercept = 2, linetype = 2)+
+  labs(subtitle = "Elbow method")
+
+clusplot(modsensors2, kc$cluster, color=TRUE, shade=TRUE, labels=2, lines=0)
+
+#higher dimensional plot
+#dataviz
+library(rgl)
+newkc &lt;- data.frame(modsensors2, K=kc$cluster)#Include the number of cluster in the data set
+pcdf &lt;- princomp(modsensors2,cor=T,score=T)
+summary(pcdf)#Compute the validity of each component/dimension
+plot3d(pcdf$scores, col=newkc$K)#Create a 3D plot
+
+                    </textarea>
+            </div>
+    
+</body>
+</html>

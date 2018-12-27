@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Binary Agent</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<style>
+
+html {
+    background-color: white;
+    overflow-x: hidden;
+    padding-right: 10px;
+}
+
+#title{
+    
+    text-shadow: -1px -1px 3px #AAA,
+                         1px 1px 3px #FFF;
+    box-shadow: 10px 10px 5px #888888;
+    color: black;
+    padding-bottom: 10px;
+    font-size: 20px;
+    font-family: "Sans"; 
+  }
+
+#main {
+    background-color: white;
+    margin-top: 20px;
+    padding-bottom: 120px;
+    margin-left: 10px;
+    font-size: 16px;
+}
+  #btcprice{
+      text-align: left;
+      padding-left: 20px;
+  }
+
+  #git {
+    margin-left: 10px;
+    border-radius: 100%;
+    width: 100px;
+  }
+
+  #newsicon {
+    margin-left: 20px;
+    border-radius: 100%;
+    width: 100px;
+  }
+  
+  #video {
+    margin-left: 10px;
+    margin-top: 20px;
+  }
+  
+  table, th, td{
+    font-family: fantasy;
+    font-size: 20px;
+    text-align: center;
+    margin-left: 10px;
+      
+  } 
+
+  .header {
+    text-align: center !important;
+  }
+
+  #note1 {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 24px;
+  }
+
+  #note2 {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  
+ textarea {
+   resize: none;
+   
+ }
+
+footer {
+  margin-left: 10px;
+  font-family: monospace;
+}
+
+#news {
+  font-family: fantasy;
+  font-weight: bold;
+  text-decoration: darkblue;
+}
+
+#loading {
+  width: 300px;
+  margin-left: 50px;
+  margin-top: 40px;
+}
+
+</style>
+
+<body>
+        <div>
+                <h1 id="title"><a href="/">
+                <img id="git" src="https://cdn2.iconfinder.com/data/icons/web-application-icons-part-i/100/Artboard_43-512.png">
+			</a>
+                </h1>
+            </div>
+            <div id="main">
+                    <textarea rows="30" cols="50"> 
+       
+//www.github.com/callmekurisu    
+//convery binary to string
+function binaryAgent(str) {
+//create array of binary strings
+let arrBinary = str.split(" ");
+//make a box to store ascii conversions
+let asciiBox = [];
+//iterate through the array of binary strings
+//one at a time convert to decimal with parseInt
+//at the same time convert decimal to ascii
+//at the same time push ascii into array
+for(i=0;i&lt;arrBinary.length;i++){
+    asciiBox.push(String.fromCharCode(parseInt(arrBinary[i],2)));
+}
+let join = asciiBox.join("");
+return join;
+}
+     
+//use this to test in the console
+binaryAgent("01000001 01110010 01100101 01101110 00100111 01110100 00100000 01100010 01101111 01101110 01100110 01101001 01110010 01100101 01110011 00100000 01100110 01110101 01101110 00100001 00111111");
+      
+</textarea>
+</div>
+    
+</body>
+</html>

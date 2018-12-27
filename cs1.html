@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Lorenz solution</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<style>
+
+html {
+    background-color: white;
+    overflow-x: hidden;
+    padding-right: 10px;
+}
+
+#title{
+    
+    text-shadow: -1px -1px 3px #AAA,
+                         1px 1px 3px #FFF;
+    box-shadow: 10px 10px 5px #888888;
+    color: black;
+    padding-bottom: 10px;
+    font-size: 20px;
+    font-family: "Sans"; 
+  }
+
+#main {
+    background-color: white;
+    margin-top: 20px;
+    padding-bottom: 120px;
+    margin-left: 10px;
+    font-size: 16px;
+}
+  #btcprice{
+      text-align: left;
+      padding-left: 20px;
+  }
+
+  #git {
+    margin-left: 10px;
+    border-radius: 100%;
+    width: 100px;
+  }
+
+  #newsicon {
+    margin-left: 20px;
+    border-radius: 100%;
+    width: 100px;
+  }
+  
+  #video {
+    margin-left: 10px;
+    margin-top: 20px;
+  }
+  
+  table, th, td{
+    font-family: fantasy;
+    font-size: 20px;
+    text-align: center;
+    margin-left: 10px;
+      
+  } 
+
+  .header {
+    text-align: center !important;
+  }
+
+  #note1 {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 24px;
+  }
+
+  #note2 {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  
+ textarea {
+   resize: none;
+   
+ }
+
+footer {
+  margin-left: 10px;
+  font-family: monospace;
+}
+
+#news {
+  font-family: fantasy;
+  font-weight: bold;
+  text-decoration: darkblue;
+}
+
+#loading {
+  width: 300px;
+  margin-left: 50px;
+  margin-top: 40px;
+}
+
+</style>
+
+<body>
+        <div>
+                <h1 id="title"><a href="/">
+                <img id="git" src="https://cdn2.iconfinder.com/data/icons/web-application-icons-part-i/100/Artboard_43-512.png">
+                </a>
+                </h1>
+            </div>
+            <div id="main">
+                    <textarea rows="30" cols="50">   
+%www.github.com/callmekurisu                                          
+%Solution for Lorenz System
+clear;clc;
+%initial values                       
+sigma = 10;
+P = 28;
+B = 8/3;
+x(1) = 0.01;
+y(1) = 0.01;
+z(1) = 0.01;
+dt = 0.01;
+n = 10000;
+%create for loop with the following values for n iterations
+%dx = sigma*(y(1)-x(1));
+%x(2)= x(1)+dx*dt
+%dy = x(1)*(P-z(1))-y(1);
+%y(2)= y(1)+dy*dt
+%dz = x(1)*y(1)-B*z(1);
+%z(2)= z(1)+dz*dt
+for i = 1:n
+dx = sigma*(y(i)-x(i));
+x(i+1)= x(i)+dx*dt;
+dy = x(i)*(P-z(i))-y(i);
+y(i+1)= y(i)+dy*dt;
+dz = x(i)*y(i)-B*z(i);
+z(i+1)= z(i)+dz*dt;end
+plot3(x(1:i), y(1:i), z(1:i));
+                        </textarea>
+            </div>
+    
+</body>
+</html>

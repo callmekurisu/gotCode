@@ -1,0 +1,218 @@
+","_self");
+
+         },1000);
+     }
+     open();
+     
+   }
+ }
+});
+ });
+});//onclick ends here
+}); 
+    nopay2.addEventListener("click", event => {
+        alert("Payment functionality disabled. Feel free to donate below. Check back soon! (^_^)");
+    });
+
+    nopay3.addEventListener("click", event => {
+        alert("Payment functionality disabled. Feel free to donate below. Check back soon! (^_^)");
+    });
+        fetch(`${apiUrl}`)
+            //.json() method returns a Promise
+            //of the response body parsed from JSON
+        .then(res => res.json())
+        .then(response => {
+        //return current btc price
+        
+        let display = response.data[1].quotes.USD.price;
+        //1 bitcoin = 100,000,000 satoshis
+        let satoshi = display.toFixed(2)/100000000;
+        btcprice.innerHTML = `<strong>BTCUSD $${display.toFixed(2)}`;
+        //convert satoshi price to USD
+        cs1price.innerHTML = "<strong>$" + (satoshi*cs1sats).toFixed(4);
+        cs2price.innerHTML = "<strong>$" + (satoshi*cs2sats).toFixed(4);
+        cs3price.innerHTML = "<strong>$" + (satoshi*cs3sats).toFixed(4);
+        console.log(display);
+        })
+        
+        .catch(err => console.log(err))
+        
+});
+
+    
+    </script>
+    <style>
+    
+    html {
+    background-color: white;
+    overflow-x: hidden;
+    padding-right: 10px;
+}
+
+#title{
+    
+    text-shadow: -1px -1px 3px #AAA,
+                         1px 1px 3px #FFF;
+    box-shadow: 10px 10px 5px #888888;
+    color: black;
+    padding-bottom: 10px;
+    font-size: 20px;
+    font-family: "Sans"; 
+  }
+
+#main {
+    background-color: white;
+    margin-top: 20px;
+    padding-bottom: 120px;
+    margin-left: 10px;
+    font-size: 16px;
+}
+  #btcprice{
+      text-align: left;
+      padding-left: 20px;
+  }
+
+  #git {
+    margin-left: 10px;
+    border-radius: 100%;
+    width: 100px;
+  }
+
+  #newsicon {
+    margin-left: 20px;
+    border-radius: 100%;
+    width: 100px;
+  }
+  
+  #video {
+    margin-left: 10px;
+    margin-top: 20px;
+  }
+  
+  table, th, td{
+    font-family: fantasy;
+    font-size: 20px;
+    text-align: center;
+    margin-left: 10px;
+      
+  } 
+
+  .header {
+    text-align: center !important;
+  }
+
+  #note1 {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 24px;
+  }
+
+  #note2 {
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+
+  #paydiv {
+      margin-left: 10px;
+      margin-top: 50px;
+      font-size: 16px;
+  }
+  
+ textarea {
+   resize: none;
+   
+ }
+
+footer {
+  margin-left: 10px;
+  font-family: monospace;
+}
+
+#news {
+  font-family: fantasy;
+  font-weight: bold;
+  text-decoration: darkblue;
+}
+
+#loading {
+  width: 300px;
+  margin-left: 50px;
+  margin-top: 40px;
+}
+#nopay2, #nopay3 {
+    background-color: red;
+}
+
+    </style>
+
+<body>
+    <div>
+        <h1 id="title"><a href="https://github.com/callmekurisu" target="_blank">
+        <img id="git" src="https://assets-cdn.github.com/images/modules/open_graph/github-octocat.png">
+		</a>LND gotCode v.01 Beta <a href="/news">News</a> <span id="btcprice"></span>
+        </h1>
+    </div>
+    
+    
+
+    </div>    
+    <div id="main">
+          <iframe id="video" width="560" height="315" src="https://www.youtube.com/embed/rrr_zPmEiME" frameborder="0" allow="autoplay; encrypted-media" ></iframe>
+            <br>
+           
+          <br>
+           <h4 id="note1">Welcome! Watch the video to learn
+               more about the lightning network.
+           </h4>
+           <br>
+           <h4 id="note1"><strong>Available Code Snippets</strong>
+           </h4>
+           <table class = "table" id="t">
+               <tr>
+                   <th scope="col" class="header">Snippet</th>
+                   <th scope="col"class="header"> Description </th>
+                   <th scope="col"class="header"> File Type </th>
+                   <th scope="col" class="header">Price $SATS</th>
+                   <th scope="col" class="header">Price $USD</th>
+                   <th scope="col" class="header"></th>
+                </tr>
+                <tr>
+                    <td>lorenz.m</td>
+                    <td id="cs1">Solution for Lorenz System</td>
+                    <td>Matlab/Octave  </td>
+                    <td id="cs1sats"> 10 </td>
+                    <td id="CS1price">$</td>
+                    <td><button id="nopay" class="btn btn-primary">Buy</button></td>
+                </tr>
+                <tr>
+                    <td id="cs2">binary.js</td>
+                    <td>Binary to String</td>
+                    <td>Javascript </td>
+                    <td id="cs2sats">20</td>
+                    <td id="CS2price"></td>
+                    <td><button id="nopay2" class="btn btn-primary">Offline</button></td>
+                </tr>
+                <tr>
+                    <td id="cs3">kmeans.R</td>        <td> K-Means Clustering</td>
+                    <td>R</td>
+                    <td id="cs3sats">30</td>
+                    <td id="CS3price"></td>
+                    <td><button id="nopay3" class="btn btn-primary">Offline</button></td>
+                </tr>
+            </table>
+
+          <br>
+            <p id="note2">1 BTC = 100,000,000 $SATS (satoshis)</p>
+          <br>
+          <h6 id="note1">This microservice is powered by <a href="https://github.com/lightningnetwork/lnd">LND </a> testnet
+            <h6 id="note1">Price data provided by <a href="https://coinmarketcap.com/api/">CoinMarketCap</a> public API
+        </h4>
+        <br>  
+    </div>
+    <!-- Generate invoice on home page load
+         hide until user interacts with pay 
+         buttton -->
+         
+    <div id="dialog-confirm" title="Pay invoice then press 'Access File'">
+	    <p id="payreq">
