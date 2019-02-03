@@ -5,7 +5,7 @@ process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA';
 let lndCert = fs.readFileSync('/home/ubuntu/.lnd/tls.cert');
 let sslCreds = grpc.credentials.createSsl(lndCert);
 let macaroonCreds = grpc.credentials.createFromMetadataGenerator(function(args, callback) {
-    let macaroon = fs.readFileSync("/home/ubuntu/.lnd/data/chain/bitcoin/testnet/admin.macaroon").toString('hex');
+    let macaroon = fs.readFileSync("/home/ubuntu/.lnd/data/chain/bitcoin/mainnet/admin.macaroon").toString('hex');
     let metadata = new grpc.Metadata()
     metadata.add('macaroon', macaroon);
     callback(null, metadata);
@@ -36,13 +36,23 @@ let cmd = require('node-cmd')
 let multer = require('multer')
 let upload = multer({ dest: 'projectOneReceipts'})
 let cors = require('cors')
-app.use(cors())
 
+let whitelist = ['https://pop-server.hopto.org', 'https://proof-of-plays.com', 
+                 'https://proofofplays.hopto.org', 'http://proofofplays.hopto.org', 'http://proof-of-plays.com']
 let corsOptions = {
-  origin: 'http://paywall-demo.s3-website-us-west-2.amazonaws.com',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
 }
 
+// SSL certificate error handling
+require('https').globalAgent.options.ca = require('ssl-root-cas/latest').create();
+
+// set port for ssl verification
 let port = 7777;
 app.set('port', (process.env.PORT || port));
 
@@ -52,11 +62,15 @@ let  options = {
 	    cert: fs.readFileSync('./server.crt', 'utf8')  
 }
 
+// set port for https
 const httpsPort = 7777;
 
 let http = require('http');
 let https = require('https');
 
+/* Comment forceSsl and secureServer to renew certs on http
+ensure /etc/nginx/nginx.conf has correct ip of ec2
+forward port 7777 to port 80*/
 let forceSsl = require('express-force-ssl');
 
 app.use(forceSsl);
@@ -64,12 +78,13 @@ let secureServer = https.createServer(options, app).listen(httpsPort, () => {
 	    console.log(">> Got Code? listening in the interwebz...");  
 });
 
+
 require('events').EventEmitter.defaultMaxListeners = Infinity;
 
-/*ssl verification
-app.get('/.well-known/acme-challenge/-DD9QKlqwO3PMLE0EOFXKgOq_bCSIq6b8LFps9LwpoY',function (req, res){
-    res.send("-DD9QKlqwO3PMLE0EOFXKgOq_bCSIq6b8LFps9LwpoY.LdNxK9E6CMW5qJyQ6l2sezkKbYpj1mnaJzdoCfvGWLs")
-});*/
+// ssl verification
+app.get('/.well-known/acme-challenge/NTyj9-NA-LGDBpMrVCNWZaJeqFU4lFfZxeA-zTmxs7o',function (req, res){
+    res.send("NTyj9-NA-LGDBpMrVCNWZaJeqFU4lFfZxeA-zTmxs7o.fM7p8OXU4V8uOLbTZWb8J74Sk1Hsre1JjowjEN5MAiA")
+});
 
 // Home page
 app.get('/',function (req, res) {
@@ -79,29 +94,77 @@ app.get('/',function (req, res) {
         memo: "Got Code",
         value: 10,
     }
-
-    lightning.addInvoice(request, (err,response) => {
-        let invoice = response.payment_request;
-        lightning.decodePayReq(invoice, function(err, response){
-            let hash = response.payment_hash;
-            res.send(html1+'window.open("/cs1/'+hash+html+invoice+html2); 
-        })
-        
-        
-        
-    });
+        //ip logging for malicious actor tracing
+	ip = req.ip.split(":");
+	console.log(ip[3])
+    // lightning.addInvoice(request, (err,response) => {
+        // let invoice = response.payment_request;
+        // lightning.decodePayReq(invoice, function(err, response){
+            // let hash = response.payment_hash;
+          // home page testing  
+	  // res.send(html1+'window.open("/cs1/'+hash+html+invoice+html2); 
+          // res.send("Lightpoll payment server is running")
+	  res.send("LND mainnet server is online")
+	//})        
+   // });
     
 });
 
 //working on sending payment
 app.get('/okane/:payReq', (req, res) => {
+ 
+  //ip logging for malicious actor tracing
+  ip = req.ip.split(":");
+  console.log(ip[3])
+  valid = ip[3]
+  if(valid === '34.215.137.184'){
+
+    let pr = req.params.payReq	
+    let request = {
+      payment_request: pr
+    }
+  
+    lightning.sendPaymentSync(request, function(err, response) {
+      if(err){
+        res.send(err);
+      }
+      res.send(response);
+    });
+  } 
 });
 
-app.get('/verify/:Hash', cors(corsOptions), (req, res) => {
+app.get('/info', cors(corsOptions), (req, res) => {
+ let request = {} 
+ lightning.getInfo(request, function(err, response) {
+    res.send(response)
+  })
+})
+
+app.get('/decode/:payReq', (req, res) => {
+  
+  //ip logging for malicious actor tracing
+  ip = req.ip.split(":");
+  console.log(ip[3])
+   
+  let pr = req.params.payReq
+  let request = { 
+    pay_req: pr
+  } 
+
+  lightning.decodePayReq(request, function(err, response) {
+    if(err){
+      res.send(err);
+    }
+  
+    res.send(response);
+  });
+});
+
+app.get('/verify/:Hash',  (req, res) => {
     data = req.params;
     payment = data.Hash;
     
-    var request = { 
+    let request = { 
         r_hash_str: payment
       }
       lightning.lookupInvoice(request, function(err, response) {
@@ -151,13 +214,13 @@ app.get('/news', (req, res) => {
         res.send(news);
 });
 
-//upload functionality for ERS project
+/*upload functionality for ERS project
 app.post('/receipts', upload.single('receipt'), function(req, res, next){
     console.log("got new upload")
     res.sendStatus(200);
-})
+})*/
 
-// Get the balance of the lightining node
+// Get the balance of the lightning node
 app.get('/balance', (req, res) => {
     let request = {}
     lightning.channelBalance(request, function(err, response) {
@@ -186,7 +249,7 @@ app.get('/invoice/:memo/:value', cors(corsOptions), (req, res) => {
 	});
     })
 
-// Listen for payment on the paywall demo
+// Listen for payment, subscribe invoices
 app.get('/listen/:payReq', cors(corsOptions), (req, res) => {
     data = req.params
     payReq = data.payReq
@@ -215,8 +278,8 @@ app.get('/listen/:payReq', cors(corsOptions), (req, res) => {
 	console.log("restarting server...")
 })
 
-        /*user for running on on http or local testing
+        /* use for running on on http or local testing
       app.listen(port, '0.0.0.0', (err) => {
         console.log(`Listening on port ${port}`);
-       })*/ 	
+       })*/	
    
