@@ -37,8 +37,10 @@ let multer = require('multer')
 let upload = multer({ dest: 'projectOneReceipts'})
 let cors = require('cors')
 
+//add http://localhost:3000 when testing locally
 let whitelist = ['https://pop-server.hopto.org', 'https://proof-of-plays.com', 
-                 'https://proofofplays.hopto.org', 'http://proofofplays.hopto.org', 'http://proof-of-plays.com']
+                 'https://proofofplays.hopto.org', 'http://proofofplays.hopto.org','http://proof-of-plays.com']
+
 let corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -239,7 +241,7 @@ app.get('/invoice/:memo/:value', cors(corsOptions), (req, res) => {
         value: value,
     }
 
-    lightning.addInvoice(request, (err,response) => {
+    lightning.addInvoice(request,  (err,response) => {
         let invoice = response.payment_request;
         lightning.decodePayReq(invoice, function(err, response){
             let hash = response.payment_hash;
@@ -250,7 +252,7 @@ app.get('/invoice/:memo/:value', cors(corsOptions), (req, res) => {
     })
 
 // Listen for payment, subscribe invoices
-app.get('/listen/:payReq', cors(corsOptions), (req, res) => {
+app.get('/listen/:payReq',cors(corsOptions), (req, res) => {
     data = req.params
     payReq = data.payReq
 
